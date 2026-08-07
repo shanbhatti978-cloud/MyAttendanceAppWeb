@@ -1,0 +1,105 @@
+====================================================================
+ RAMS ADMIN WEB DASHBOARD (Phase 9)
+ 100% Free Deployment Guide — GitHub Pages
+====================================================================
+
+WHAT THIS IS
+--------------------------------------------------------------------
+A plain HTML/CSS/JavaScript web dashboard (no build step, no Flutter,
+no Node.js needed) that connects directly to the SAME Supabase cloud
+database your mobile app syncs to. Admins/Supervisors can log in from
+any browser and see live attendance, employees, leave requests, and
+reports — approving/rejecting a leave request here updates attendance
+the same way it would from the phone, and shows up on phones after
+their next sync.
+
+Employee/User management (add/edit/delete) stays on the mobile app
+for now — the web dashboard is read + leave-approval only in this
+version, to keep the two write-paths simple and safe.
+
+
+--------------------------------------------------------------------
+ BEFORE YOU START
+--------------------------------------------------------------------
+Make sure you've already run supabase_schema.sql in your Supabase
+project (same one described in the mobile app's guide) and that at
+least one Admin/Supervisor account has synced up from the phone at
+least once (Settings > Cloud Sync > Sync Now on the mobile app).
+Without that, there's no account in the cloud to log into the web
+dashboard with yet.
+
+
+--------------------------------------------------------------------
+ DEPLOY TO GITHUB PAGES (FREE, NO BUILD STEP, ~3 MINUTES)
+--------------------------------------------------------------------
+STEP 1 - Create a new GitHub repository
+    Go to https://github.com/new
+    Name it anything, e.g. "rams-web-dashboard"
+    Keep it Public (GitHub Pages' free tier requires a public repo,
+    unless you're on a paid GitHub plan).
+    Click "Create repository".
+
+STEP 2 - Upload these files
+    On the new repo's page, click "Add file" > "Upload files", then
+    drag in ALL of these (from this folder):
+        index.html
+        style.css
+        app.js
+        supabase-config.js
+    Click "Commit changes".
+
+STEP 3 - Turn on GitHub Pages
+    In the repo, go to Settings > Pages (left sidebar).
+    Under "Build and deployment" > "Source", choose:
+        Deploy from a branch
+    Under "Branch", choose:
+        main   /   (root)
+    Click "Save".
+
+STEP 4 - Wait ~1-2 minutes, then open your live dashboard
+    Refresh the Settings > Pages screen — it will show a green box
+    with your live URL, something like:
+        https://yourusername.github.io/rams-web-dashboard/
+    Open that link — you should see the login screen.
+
+
+--------------------------------------------------------------------
+ LOGGING IN
+--------------------------------------------------------------------
+Use the same Admin or Supervisor username/password you use on the
+mobile app. Viewer accounts cannot log into the web dashboard (by
+design — Viewer is read-only and doesn't need the extra surface).
+
+If login says "Invalid username or password" but you're sure it's
+correct, that account likely hasn't synced up from the phone yet:
+open the mobile app, log in as that user once, then go to
+Settings > Cloud Sync > Sync Now.
+
+
+--------------------------------------------------------------------
+ UPDATING THE DASHBOARD LATER
+--------------------------------------------------------------------
+If Claude gives you updated index.html / app.js / style.css files
+later, just upload them again the same way (Add file > Upload files)
+— GitHub Pages picks up the change automatically within a minute or
+two, no redeploy step needed.
+
+
+--------------------------------------------------------------------
+ SWITCHING TO A DIFFERENT SUPABASE PROJECT
+--------------------------------------------------------------------
+If you ever change Supabase projects, update the two values at the
+top of supabase-config.js (SUPABASE_URL and SUPABASE_ANON_KEY) to
+match the new project, and re-run supabase_schema.sql against it —
+same as you would for the mobile app's lib/utils/supabase_config.dart.
+
+
+--------------------------------------------------------------------
+ WHAT'S INSIDE THIS FOLDER
+--------------------------------------------------------------------
+    index.html            - page structure (login screen + app shell)
+    style.css              - all styling (matches the mobile app's theme)
+    supabase-config.js     - your Supabase project URL + public key
+    app.js                  - all the dashboard logic (login, dashboard,
+                               employees, attendance, leave approval,
+                               monthly report)
