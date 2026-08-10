@@ -34,24 +34,32 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
   try {
     const passwordHash = await sha256Hex(password);
+    // Deliberately NOT using .maybeSingle() here: that throws an error
+    // if more than one row matches, which would silently break login
+    // for EVERY account (not just this one) if duplicate username rows
+    // ever ended up in app_users. Ordering by updated_at and taking the
+    // newest match makes login self-healing regardless.
     const { data, error } = await db
       .from('app_users')
       .select('username, role, password_hash')
       .eq('username', username)
-      .maybeSingle();
+      .order('updated_at', { ascending: false })
+      .limit(1);
 
     if (error) throw error;
 
-    if (!data || data.password_hash !== passwordHash) {
+    const match = data && data.length > 0 ? data[0] : null;
+
+    if (!match || match.password_hash !== passwordHash) {
       errorEl.textContent = 'Invalid username or password.';
       return;
     }
-    if (data.role !== 'Admin' && data.role !== 'Supervisor') {
+    if (match.role !== 'Admin' && match.role !== 'Supervisor') {
       errorEl.textContent = 'This account does not have web dashboard access.';
       return;
     }
 
-    currentUser = { username: data.username, role: data.role };
+    currentUser = { username: match.username, role: match.role };
     sessionStorage.setItem('rams_user', JSON.stringify(currentUser));
     enterApp();
   } catch (err) {
